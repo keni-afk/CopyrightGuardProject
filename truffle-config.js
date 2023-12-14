@@ -103,6 +103,13 @@ module.exports = {
     // timeout: 100000
   },
 
+  plugins: [
+    "truffle-security"
+  ],
+  api_keys: {
+    mythx: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1ODJkZTBkYS1lZmFkLTRiOGUtYTQ1MS1mZmFjMTg5MWMyMDUiLCJpYXQiOjE3MDE5MTMyMDMuNjQ1LCJpc3MiOiJNeXRoWCBBdXRoIFNlcnZpY2UiLCJleHAiOjIwMTc0ODkyMDMuNjQxLCJ1c2VySWQiOiI2NTcxMWYwM2Y0YmY1ODA0ZjE1OTMzMjAifQ.mAhUI6XV_QKo8jnvEJ8jztlmuWTcv5zwmjTVt4GhjfI"
+  },
+  
   // Configure your compilers
   compilers: {
     solc: {

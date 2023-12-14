@@ -1,12 +1,28 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.2;
 
 contract CopyrightGuard {
     address public owner;
-    mapping(uint256 => address) public owners;
-    mapping(uint256 => string) public works;
+    
+    enum WorkType { Literary, Musical }
+    
+    struct Work {
+        address creator;
+        WorkType workType;
+        string description;
+        uint256 timestamp;
+        bool exists;
+    }
 
-    event WorkRegistered(uint256 indexed id, address indexed owner, string work);
+    mapping(uint256 => Work) public works;
+
+    event WorkRegistered(
+        uint256 indexed id,
+        address indexed creator,
+        WorkType workType,
+        string description,
+        uint256 timestamp
+    );
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the owner");
@@ -17,15 +33,33 @@ contract CopyrightGuard {
         owner = msg.sender;
     }
 
-    function registerWork(uint256 id, string memory work) external {
-        require(owners[id] == address(0), "Work ID already exists");
-        owners[id] = msg.sender;
-        works[id] = work;
-        emit WorkRegistered(id, msg.sender, work);
+    function registerWork(
+        uint256 id,
+        WorkType workType,
+        string memory description
+    ) external {
+        require(!works[id].exists, "Work ID already exists");
+        works[id] = Work(msg.sender, workType, description, block.timestamp, true);
+        emit WorkRegistered(id, msg.sender, workType, description, block.timestamp);
+    }
+
+    function verifyAuthenticity(uint256 id) external view returns (
+        address creator,
+        WorkType workType,
+        string memory description,
+        uint256 timestamp
+    ) {
+        require(works[id].exists, "Work ID does not exist");
+        return (works[id].creator, works[id].workType, works[id].description, works[id].timestamp);
+    }
+
+    function monitorUsage(uint256 id) external view returns (uint256 timestamp) {
+        require(works[id].exists, "Work ID does not exist");
+        return works[id].timestamp;
     }
 
     function transferOwnership(uint256 id, address newOwner) external onlyOwner {
-        require(owners[id] == msg.sender, "Not the owner of the work");
-        owners[id] = newOwner;
+        require(works[id].exists, "Work ID does not exist");
+        works[id].creator = newOwner;
     }
 }
